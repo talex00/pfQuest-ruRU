@@ -1214,20 +1214,45 @@ function pfDatabase:SearchQuestID(id, meta, maps)
         -- spawn data
         if type == "monster" then
           local i, j, monsterName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_MONSTERS_KILLED))
-          for id in pairs(pfDatabase:GetIDByName(monsterName, "units")) do
-            parse_obj["U"][id] = ( objNum + 0 >= objNeeded + 0 or done ) and "DONE" or "PROG"
+          if not monsterName then
+            local _, _, namePart, numPart, needPart = strfind(text, "^(.-)%s*[:%s]%s*(%d+)%s*/%s*(%d+)%s*$")
+            if namePart then
+              monsterName = string.gsub(namePart, "[Ss]lain", "")
+              monsterName = string.gsub(monsterName, "[Уу]бито", "")
+              monsterName = string.gsub(monsterName, "^%s*(.-)%s*$", "%1")
+              monsterName = string.gsub(monsterName, "[:%-]%s*$", "")
+              monsterName = string.gsub(monsterName, "^%s*(.-)%s*$", "%1")
+              objNum, objNeeded = numPart, needPart
+            end
           end
+          if monsterName then
+            for id in pairs(pfDatabase:GetIDByName(monsterName, "units")) do
+              parse_obj["U"][id] = ( objNum + 0 >= objNeeded + 0 or done ) and "DONE" or "PROG"
+            end
 
-          for id in pairs(pfDatabase:GetIDByName(monsterName, "objects")) do
-            parse_obj["O"][id] = ( objNum + 0 >= objNeeded + 0 or done ) and "DONE" or "PROG"
+            for id in pairs(pfDatabase:GetIDByName(monsterName, "objects")) do
+              parse_obj["O"][id] = ( objNum + 0 >= objNeeded + 0 or done ) and "DONE" or "PROG"
+            end
           end
         end
 
         -- item data
         if type == "item" then
           local i, j, itemName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_OBJECTS_FOUND))
-          for id in pairs(pfDatabase:GetIDByName(itemName, "items")) do
-            parse_obj["I"][id] = ( objNum + 0 >= objNeeded + 0 or done ) and "DONE" or "PROG"
+          if not itemName then
+            local _, _, namePart, numPart, needPart = strfind(text, "^(.-)%s*[:%s]%s*(%d+)%s*/%s*(%d+)%s*$")
+            if namePart then
+              itemName = string.gsub(namePart, "[Пп]олучено", "")
+              itemName = string.gsub(itemName, "^%s*(.-)%s*$", "%1")
+              itemName = string.gsub(itemName, "[:%-]%s*$", "")
+              itemName = string.gsub(itemName, "^%s*(.-)%s*$", "%1")
+              objNum, objNeeded = numPart, needPart
+            end
+          end
+          if itemName then
+            for id in pairs(pfDatabase:GetIDByName(itemName, "items")) do
+              parse_obj["I"][id] = ( objNum + 0 >= objNeeded + 0 or done ) and "DONE" or "PROG"
+            end
           end
         end
       end
@@ -1582,7 +1607,7 @@ function pfDatabase:GetQuestIDs(qid)
   -- always make sure the quest-cache exists
   pfQuest_questcache = pfQuest_questcache or {}
 
-  if pfQuest_questcache[identifier] and pfQuest_questcache[identifier][1] then
+  if pfQuest_questcache[identifier] and pfQuest_questcache[identifier][1] and type(pfQuest_questcache[identifier][1]) == "number" then
     return pfQuest_questcache[identifier]
   end
 

@@ -191,6 +191,11 @@ pfQuestConfig:SetScript("OnEvent", function()
     pfQuest_track = pfQuest_track or {}
     pfBrowser_fav = pfBrowser_fav or {["units"] = {}, ["objects"] = {}, ["items"] = {}, ["quests"] = {}}
 
+    if not pfQuest_config.locale_patched then
+      pfQuest_questcache = {}
+      pfQuest_config.locale_patched = true
+    end
+
     -- clear quest history on new characters
     if UnitXP("player") == 0 and UnitLevel("player") == 1 then
       pfQuest_history = {}

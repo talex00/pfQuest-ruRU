@@ -288,6 +288,17 @@ function pfMap:ShowTooltip(meta, tooltip)
             if type == "monster" then
               -- kill
               local i, j, monsterName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_MONSTERS_KILLED))
+              if not monsterName then
+                local _, _, namePart, numPart, needPart = strfind(text, "^(.-)%s*[:%s]%s*(%d+)%s*/%s*(%d+)%s*$")
+                if namePart then
+                  monsterName = string.gsub(namePart, "[Ss]lain", "")
+                  monsterName = string.gsub(monsterName, "[Уу]бито", "")
+                  monsterName = string.gsub(monsterName, "^%s*(.-)%s*$", "%1")
+                  monsterName = string.gsub(monsterName, "[:%-]%s*$", "")
+                  monsterName = string.gsub(monsterName, "^%s*(.-)%s*$", "%1")
+                  objNum, objNeeded = numPart, needPart
+                end
+              end
               if monsterName and meta["spawn"] == monsterName then
                 catch_obj = true
                 local r,g,b = pfMap.tooltip:GetColor(objNum, objNeeded)
@@ -296,7 +307,16 @@ function pfMap:ShowTooltip(meta, tooltip)
             elseif table.getn(meta["item"]) > 0 and type == "item" and meta["droprate"] then
               -- loot
               local i, j, itemName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_OBJECTS_FOUND))
-
+              if not itemName then
+                local _, _, namePart, numPart, needPart = strfind(text, "^(.-)%s*[:%s]%s*(%d+)%s*/%s*(%d+)%s*$")
+                if namePart then
+                  itemName = string.gsub(namePart, "[Пп]олучено", "")
+                  itemName = string.gsub(itemName, "^%s*(.-)%s*$", "%1")
+                  itemName = string.gsub(itemName, "[:%-]%s*$", "")
+                  itemName = string.gsub(itemName, "^%s*(.-)%s*$", "%1")
+                  objNum, objNeeded = numPart, needPart
+                end
+              end
               for mid, item in pairs(meta["item"]) do
                 if item == itemName then
                   catch_obj = true
@@ -309,7 +329,16 @@ function pfMap:ShowTooltip(meta, tooltip)
             elseif table.getn(meta["item"]) > 0 and type == "item" and meta["sellcount"] then
               -- vendor
               local i, j, itemName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_OBJECTS_FOUND))
-
+              if not itemName then
+                local _, _, namePart, numPart, needPart = strfind(text, "^(.-)%s*[:%s]%s*(%d+)%s*/%s*(%d+)%s*$")
+                if namePart then
+                  itemName = string.gsub(namePart, "[Пп]олучено", "")
+                  itemName = string.gsub(itemName, "^%s*(.-)%s*$", "%1")
+                  itemName = string.gsub(itemName, "[:%-]%s*$", "")
+                  itemName = string.gsub(itemName, "^%s*(.-)%s*$", "%1")
+                  objNum, objNeeded = numPart, needPart
+                end
+              end
               for mid, item in pairs(meta["item"]) do
                 if item == itemName then
                   catch_obj = true

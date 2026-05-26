@@ -1,3 +1,13 @@
+-- Force Russian locale for Russian patch users on English client
+local original_GetLocale = GetLocale
+GetLocale = function()
+  local locale = original_GetLocale()
+  if locale == "enUS" or locale == "enGB" then
+    return "ruRU"
+  end
+  return locale
+end
+
 -- some abstraction to allow multi-client code
 local _, _, _, client = GetBuildInfo()
 client = client or 11200
